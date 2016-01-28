@@ -4,7 +4,10 @@ For a great writeup about the Hapi server implementation see [http://www.sitepoi
 
 These instructions assume you've setup ReactNative locally. 
 
-![Sign in](https://cloud.githubusercontent.com/assets/1282364/12651900/34ce10d2-c5ae-11e5-84b9-0f07bb3625c3.png)
+## Screen shot from Android GenyMotion emulator
+
+<img src="https://cloud.githubusercontent.com/assets/1282364/12651900/34ce10d2-c5ae-11e5-84b9-0f07bb3625c3.png" width="200">
+
 
 ## Setup
 
