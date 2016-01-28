@@ -1,0 +1,16 @@
+{
+  "name": "oAuth",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "react-native start"
+  },
+  "dependencies": {
+    "cookie": "^0.2.3",
+    "react-native": "^0.18.1",
+    "react-native-button": "^1.3.1",
+    "react-native-cookies": "https://github.com/Psykar/react-native-cookies/tarball/master",
+    "regenerator": "^0.8.42",
+    "underscore": "^1.8.3"
+  }
+}

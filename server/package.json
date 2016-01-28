@@ -1,0 +1,26 @@
+{
+  "name": "hapi-oauth",
+  "version": "0.0.1",
+  "description": "hapi-oauth",
+  "author": {
+    "name": "barton hammond"
+  },
+  "engines": {
+    "node": ">= 4.2.3",
+    "npm": ">= 2.14.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "node-debug --preload false --nodejs --harmony server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bell": "^6.1.0",
+    "hapi": "^12.1.0",
+    "hapi-auth-cookie": "^5.0.0"
+  },
+  "devDependencies": {},
+  "bundleDependencies": [],
+  "private": true,
+  "main": "server.js"
+}
