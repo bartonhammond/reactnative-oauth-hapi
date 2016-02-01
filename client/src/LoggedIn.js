@@ -33,28 +33,20 @@ export default class LoggedIn extends Component {
   }
 
   async logout () {
-    console.log('logout');
     let loggedOut = await (new HttpRequest()).logout();
     if (loggedOut) {
-      CookieManager.clearAll((err, res) => {
-        console.log('logout.err',err);
-        console.log('logout.res',res);            
-        //CookieManager.getCookieHeader('http://localhost', (res) => {
-        CookieManager.get('https://github.com', (res) => {
-          console.log('logout.github.res',res);            
-        });
-      });
-      this.setState({
+      CookieManager.clearAll(() => {
+       this.setState({
         loggedIn: false,
         userName: ''
+       });
       });
-    }
+    }//loggedout
   }
-  
+     
   render () {
     if (Platform.OS === 'ios') {
       CookieManager.getAll((cookie) => {
-        console.log('LoggedIn.cookies',cookie);
         if (cookie.dotcom_user && cookie.dotcom_user.value) {
           this.setState({
             userName: cookie.dotcom_user.value,
@@ -63,11 +55,6 @@ export default class LoggedIn extends Component {
         }
       });
     } else {
-        CookieManager.get('http://localhost', (res) => {
-        if (res) {
-            console.log('LoggedIn.localhost.res',res);
-        }
-      });
       CookieManager.get('https://github.com', (res) => {
         if (res) {
           let cookie  = Cookie.parse(res);

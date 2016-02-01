@@ -3,7 +3,6 @@
 import React, {
   Platform,
   StyleSheet,
-  Text,
   View,
   WebView,
   Component} from
@@ -12,11 +11,11 @@ import React, {
 import _ from 'underscore';
 import Cookie from 'cookie';
 import CookieManager from 'react-native-cookies';
+import URL from 'url-parse';
 
 import LoggedIn from './LoggedIn';
 
 const LOGIN_URL = "http://localhost:5000/login";
-const HOME_URL = "http://localhost:5000";
 
 var styles = StyleSheet.create({
   container: {
@@ -31,108 +30,91 @@ export default class ReactNativeLogin extends Component {
 
     this.state = {
       loggedIn: false,
-      loadedCookie: false
+      url: LOGIN_URL
     };
   }
-  _checkIfAuthenticated() {
-    console.log('App._checkIfAuthenticated');
-   if (Platform.OS === 'ios') {
-     CookieManager.getAll((cookie) => {
-      console.log('App.cookies',cookie);
-      let isAuthenticated;
-
-      // If it differs, change `cookie.remember_me` to whatever the name for your persistent cookie is!!!
-      if (cookie && cookie.logged_in && cookie.logged_in.value ===
-          'yes') {
-        isAuthenticated = true;
-      }
-      else {
-        isAuthenticated = false;
-      }
-
-      this.setState({
-        loggedIn: isAuthenticated,
-        loadedCookie: true
-      });
-    });
-
-   } else {
-      console.log("_checkIfAuthenticated");
-      //CookieManager.getCookieHeader('http://localhost', (res) => {
-      CookieManager.get('https://github.com', (res) => {
-        let loggedIn = false;
-        if (res) {
-          let cookie  = Cookie.parse(res);
-          if (cookie.logged_in === 'yes') {
-            loggedIn = true;
+  /**
+   * @returns Promise w/ true/false
+   */
+  async  _isAuthenticated() {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'ios') {
+        return CookieManager.getAll((cookie) => {
+          if (cookie && cookie.logged_in && cookie.logged_in.value ===
+              'yes') {
+            return resolve(true);
           }
-        }
-        console.log("android.getCookieHeader", res);
-        this.setState({
-          loggedIn: loggedIn,
-          loadedCookie: true
-        });        
-      });
-    }
-
-  }
-  componentWillMount () {
-    this._checkIfAuthenticated();        
+          return resolve(false);         
+        });
+      } else { //android
+        return CookieManager.get('https://github.com', (res) => {
+          if (res) {
+            let cookie  = Cookie.parse(res);
+            if (cookie.logged_in === 'yes') {
+              return resolve(true);
+            }
+          }
+          return resolve(false);                             
+        });
+      }
+      return reject();
+    });
   }
 
   onNavigationStateChange (navState) {
-    this._checkIfAuthenticated();        
-    
-    //this._checkIfAuthenticated();
-    console.log('onNavigationStateChange.navState',navState);
-    // If we get redirected back to the HOME_URL we know that we are logged in. If your backend does something different than this
-    // change this line.
-    if (navState.url == HOME_URL) {
-      this.setState({
-        loggedIn: true
-      });
-    }
+    let self = this;
+    if (!navState.loading) {
+      const url = new URL(navState.url);
+      if (url
+          && url.hostname === 'localhost'
+          && url.pathname === '/login') {
+        self._isAuthenticated()
+          .then((res) => {
+            self.setState({
+              loggedIn: res
+            });
+          })
+          .catch(() => {
+            self.setState({
+              loggedIn: false
+            });              
+          });
+      }
+      //back to home page?
+      if (url
+          && url.hostname === 'localhost'
+          && url.pathname === '/') {
+        self.setState({
+          loggedIn: false,
+          url: LOGIN_URL
+        });
+      }
+    }      
   }
+
 
   render () {
 
-    // If we have completed loading the cookie choose to show Login WebView or the LoggedIn component, else just show an empty View.
-    if (this.state.loadedCookie) {
-      if (this.state.loggedIn) {
-        console.log('App.render.LoggedIn');
-        return (
-          <LoggedIn/>
-        );
-      }
-      else {
-        console.log('App.render.displayWebview');
-        return (
-          <View style={[styles.container]}>
-            <WebView
-                ref={'webview'}
-                style={styles.webView}
-                url={LOGIN_URL}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                onNavigationStateChange={this.onNavigationStateChange.bind(this)}
-                onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
-                startInLoadingState={true}
-                scalesPageToFit={this.state.scalesPageToFit}
-            />
-          </View>
-        );
-      }
-    }
-    else {
-      console.log('Dumy View');
+    if (this.state.loggedIn) {
       return (
-          <View>
-          <Text>
-          Dummy view
-          </Text>
-          </View>
+          <LoggedIn/>
+      );
+    } else {
+      return (
+        <View style={[styles.container]}>
+          <WebView
+              ref={'webview'}
+              style={styles.webView}
+              url={this.state.url}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              onNavigationStateChange={this.onNavigationStateChange.bind(this)}
+              onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
+              startInLoadingState={true}
+              scalesPageToFit={this.state.scalesPageToFit}
+          />
+        </View>
       );
     }
   }
 }
-

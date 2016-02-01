@@ -3,7 +3,12 @@ var Bell = require('bell');
 var AuthCookie = require('hapi-auth-cookie');
 
 var server = new Hapi.Server();
-server.connection({ port: 5000 });
+server.connection({
+  port: 5000,
+  routes: {
+    cors: true
+  }
+});
 
 server.register([Bell, AuthCookie], function (err) {
 
@@ -42,11 +47,10 @@ server.register([Bell, AuthCookie], function (err) {
           mode: 'optional'
         },
         handler: function (request, reply) {
-
           if (request.auth.isAuthenticated) {
-            return reply('welcome back ' + request.auth.credentials.profile.displayName);
+            return reply('welcome back ' +
+                         request.auth.credentials.profile.displayName);
           }
-
           return reply('hello stranger!');
         }
       }
@@ -55,12 +59,11 @@ server.register([Bell, AuthCookie], function (err) {
       path: '/account',
       config: {
         handler: function (request, reply) {
-
           return reply(request.auth.credentials.profile);
         }
       }
     }, {
-      method: 'GET',
+      method: ['GET','POST'],
       path: '/login',
       config: {
         auth: 'github-oauth',
@@ -79,9 +82,8 @@ server.register([Bell, AuthCookie], function (err) {
       config: {
         auth: false,
         handler: function (request, reply) {
-          console.log('logout');
           request.cookieAuth.clear();
-        return reply.redirect('/');
+          return reply.redirect('/');
         }
       }
     }

@@ -20,7 +20,6 @@ class Http{
       url: '/logout'
     })
       .then((response) => {
-        console.log('http.logout.reponse',response);
         if ((response.status === 200 || response.status === 201)) {
           return true;
         } else {
@@ -28,7 +27,6 @@ class Http{
         }
       })
       .catch((error) => {
-        console.log('http.logout.error',error);
         throw(error);
       });
   }
@@ -40,7 +38,6 @@ class Http{
     
     let reqOpts = {};
     reqOpts.method= opts.method;
-    console.log('http.reqOpts', reqOpts);
     return await fetch(this.API_BASE_URL + opts.url, reqOpts);
   }
 };
