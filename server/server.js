@@ -1,6 +1,7 @@
 var Hapi = require('hapi');
 var Bell = require('bell');
 var AuthCookie = require('hapi-auth-cookie');
+var CONFIG = require('./config');
 
 var server = new Hapi.Server();
 server.connection({
@@ -28,8 +29,8 @@ server.register([Bell, AuthCookie], function (err) {
   var bellAuthOptions = {
     provider: 'github',
     password: 'github-encryption-password', //Password used for encryption
-    clientId: '06bb3ce00732d2c19dc0',//'YourAppId',
-    clientSecret: '13319c1a86fefe2b875a88eac88d13dc2d81cfd5',//'YourAppSecret',
+    clientId: CONFIG.github.clientId,
+    clientSecret: CONFIG.github.clientSecret,
     isSecure: false //true for https
 
   };
