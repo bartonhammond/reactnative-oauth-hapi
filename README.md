@@ -4,6 +4,8 @@ For a great writeup about the Hapi server implementation see [http://www.sitepoi
 
 These instructions assume you've setup ReactNative locally. 
 
+=======
+
 
 |Platform| Signin | Authorize | Logout
 |--------|-----------|-------|---------|
